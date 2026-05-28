@@ -58,6 +58,10 @@
     font-weight: 600;
     line-height: 0.98;
     letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
   }
   h1 em { color: var(--rust); font-style: italic; }
   .subhead {
@@ -67,6 +71,61 @@
     margin-top: 10px;
     max-width: 56ch;
   }
+
+  /* Info button + internal notes */
+  .info-btn {
+    background: transparent;
+    border: 1.5px solid var(--paper-line);
+    color: var(--muted);
+    width: 22px;
+    height: 22px;
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    vertical-align: middle;
+    transition: all 0.15s;
+  }
+  .info-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .info-btn[aria-expanded="true"] { background: var(--rust); color: #fff; border-color: var(--rust); }
+  .info-btn.tiny { width: 18px; height: 18px; font-size: 0.6rem; margin-left: 6px; }
+  .internal-note {
+    display: none;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.92rem;
+    background: rgba(179,80,47,0.06);
+    border-left: 2px solid var(--rust);
+    padding: 9px 13px;
+    margin: 10px 0 14px;
+    line-height: 1.45;
+  }
+  .internal-note.shown { display: block; }
+  .internal-note .heads {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    font-style: normal;
+    display: block;
+    margin-bottom: 5px;
+  }
+  .internal-note .fork { display: block; margin-top: 6px; color: var(--olive); font-size: 0.88rem; }
+  .internal-note.inline {
+    display: none;
+    margin: 6px 0 0;
+    font-size: 0.86rem;
+    padding: 6px 10px;
+  }
+  .internal-note.inline.shown { display: block; }
 
   /* Progress */
   .progress-wrap {
@@ -103,26 +162,6 @@
     transition: width 0.4s cubic-bezier(.2,.8,.2,1);
   }
 
-  /* North star box */
-  .northstar {
-    border: 2px solid var(--ink);
-    background: #fffdf8;
-    padding: 18px 20px;
-    margin-bottom: 32px;
-    position: relative;
-    box-shadow: 5px 5px 0 var(--paper-line);
-  }
-  .northstar .tag {
-    font-family: 'Spline Sans Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--rust);
-    margin-bottom: 6px;
-  }
-  .northstar p { font-size: 1.08rem; }
-  .northstar .fork { display: block; margin-top: 8px; font-size: 0.98rem; color: var(--olive); }
-
   /* Blocks */
   .block { margin-bottom: 34px; }
   .block-head {
@@ -149,12 +188,7 @@
     letter-spacing: -0.01em;
     flex: 1;
   }
-  .aim {
-    font-style: italic;
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin: 8px 0 14px;
-  }
+  .block-head .info-btn { align-self: center; }
 
   /* Checklist items */
   .item {
@@ -192,7 +226,7 @@
     align-items: center;
     justify-content: center;
   }
-  .item .label { font-size: 1.04rem; }
+  .item .label { font-size: 1.04rem; flex: 1; }
   .item.done .label { text-decoration: line-through; text-decoration-color: var(--olive); color: var(--muted); }
   .item .label .hint { display: block; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 2px; }
 
@@ -209,6 +243,9 @@
     text-transform: uppercase;
     color: var(--rust);
     padding: 9px 14px 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .field {
     display: flex;
@@ -247,14 +284,6 @@
   textarea:focus { outline: none; border-color: var(--rust); }
   textarea::placeholder { color: #a89e8c; font-style: italic; }
 
-  .listen {
-    font-size: 0.9rem;
-    color: var(--olive);
-    margin-top: 7px;
-    padding-left: 12px;
-    border-left: 2px solid var(--olive);
-  }
-
   /* Footer actions */
   .actions {
     display: flex;
@@ -290,7 +319,8 @@
   }
 
   @media print {
-    .progress-wrap, .actions { display: none; }
+    .progress-wrap, .actions, .info-btn { display: none; }
+    .internal-note { display: none !important; }
     body { background: #fff; }
   }
 </style>
@@ -303,8 +333,14 @@
       <span>RTL Forward-Deployed Pilot</span>
       <span>On-Site Discovery · 60 min</span>
     </div>
-    <h1>The <em>Field Sheet</em></h1>
-    <p class="subhead">One hour, one job: resolve the operational-vs-psychological diagnosis. Watch, time, and listen — don't pitch.</p>
+    <h1>The <em>Field Sheet</em><button class="info-btn" data-target="note-northstar" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></h1>
+    <p class="subhead">One hour on site: walk the workflow, time the relays, listen for what's actually breaking the day.</p>
+    <div class="internal-note" id="note-northstar">
+      <span class="heads">★ Walk out knowing this</span>
+      Does Jeff want to <strong>see his business clearly</strong> or <strong>stop feeling out of control</strong>?
+      <span class="fork">→ "See clearly" routes to integration-first. "Stop the fires" routes to voice-surfaces-first. Everything below points at this fork.</span>
+      Real job: resolve the operational-vs-psychological diagnosis. Don't pitch.
+    </div>
   </header>
 
   <div class="progress-wrap">
@@ -315,28 +351,22 @@
     <div class="bar"><div class="bar-fill" id="barFill"></div></div>
   </div>
 
-  <div class="northstar">
-    <div class="tag">★ Walk out knowing this</div>
-    <p>Does Jeff want to <strong>see his business clearly</strong> or <strong>stop feeling out of control</strong>?</p>
-    <span class="fork">→ "See clearly" routes to integration-first. "Stop the fires" routes to voice-surfaces-first. Everything below points at this fork.</span>
-  </div>
-
   <!-- BLOCK 1 -->
   <section class="block" data-block>
-    <div class="block-head"><span class="time">0–5 MIN</span><h2>Set the frame</h2></div>
-    <p class="aim">Establish you're here to observe, not sell. Get permission to take timestamps.</p>
-    <div class="item"><div class="box"></div><div class="label">Stated the visit is about watching, not pitching</div></div>
-    <div class="item"><div class="box"></div><div class="label">Got permission to time / take notes during their workflow</div></div>
-    <div class="item"><div class="box"></div><div class="label">Confirmed Sandy is reachable today<span class="hint">Biggest blind spot — no one has heard from Sandy directly</span></div></div>
+    <div class="block-head"><span class="time">0–5 MIN</span><h2>Set the frame</h2><button class="info-btn" data-target="note-b1" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-b1"><span class="heads">Aim</span>Establish you're here to observe, not sell. Get permission to take timestamps.</div>
+    <div class="item"><div class="box"></div><div class="label">Framed the visit as observing the workflow</div></div>
+    <div class="item"><div class="box"></div><div class="label">Got permission to time / take notes during their day</div></div>
+    <div class="item"><div class="box"></div><div class="label">Confirmed Sandy is reachable today<button class="info-btn tiny" data-target="note-b1-sandy" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-b1-sandy">Biggest blind spot — no one has heard from Sandy directly.</span></div></div>
   </section>
 
   <!-- BLOCK 2 -->
   <section class="block" data-block>
-    <div class="block-head"><span class="time">5–20 MIN</span><h2>Shadow the workflow</h2></div>
-    <p class="aim">Watch a real information-retrieval event. Observe and stopwatch — don't ask them to estimate. Kills the "hand-wavy ROI" problem.</p>
-    <div class="item"><div class="box"></div><div class="label">Witnessed a live Jen→Sandy→Marks/Jimmy relay fire</div></div>
+    <div class="block-head"><span class="time">5–20 MIN</span><h2>Shadow the workflow</h2><button class="info-btn" data-target="note-b2" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-b2"><span class="heads">Aim</span>Watch a real information-retrieval event. Observe and stopwatch — don't ask them to estimate. Kills the "hand-wavy ROI" problem.</div>
+    <div class="item"><div class="box"></div><div class="label">Witnessed a live Jen→Sandy→Marks/Jimmy relay event</div></div>
     <div class="capture">
-      <div class="capture-title">⏱ Baseline numbers (the 3 missing metrics)</div>
+      <div class="capture-title">⏱ Baseline numbers</div>
       <div class="field"><label>Information-wait time (request → answer)</label><input type="text" placeholder="e.g. 14 min" data-save="m1"></div>
       <div class="field"><label>Vendor-sourcing time per incident</label><input type="text" placeholder="e.g. 40 min" data-save="m2"></div>
       <div class="field"><label>Relay events observed per hour</label><input type="text" placeholder="e.g. 5" data-save="m3"></div>
@@ -346,30 +376,28 @@
 
   <!-- BLOCK 3 -->
   <section class="block" data-block>
-    <div class="block-head"><span class="time">20–35 MIN</span><h2>Talk to Sandy directly</h2></div>
-    <p class="aim">Half the diagnoses route through Jen's version of Sandy. Verify whether the relay is the real bottleneck or just a symptom.</p>
+    <div class="block-head"><span class="time">20–35 MIN</span><h2>Talk to Sandy directly</h2><button class="info-btn" data-target="note-b3" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-b3"><span class="heads">Aim</span>Half the diagnoses route through Jen's version of Sandy. Verify whether the relay is the real bottleneck or just a symptom.</div>
     <div class="item"><div class="box"></div><div class="label">Asked Sandy what eats the most time in a day</div></div>
     <div class="item"><div class="box"></div><div class="label">Got the monthly safety-pass duration</div></div>
     <div class="item"><div class="box"></div><div class="label">Asked what people interrupt Sandy for most often</div></div>
-    <textarea placeholder="Sandy's own words — where do they differ from Jen's version?" data-save="n3"></textarea>
+    <textarea placeholder="Sandy's own words…" data-save="n3"></textarea>
   </section>
 
   <!-- BLOCK 4 -->
   <section class="block" data-block>
-    <div class="block-head"><span class="time">35–45 MIN</span><h2>The two committing questions</h2></div>
-    <p class="aim">Put both directly to Jeff. These are the questions the May 15 sources said to ask before committing.</p>
-    <div class="item"><div class="box"></div><div class="label">"What would have to be true after 90 days for this to feel like it worked?"</div></div>
-    <div class="listen">Listen for: dashboard/data outcome = <b>operational</b> · feeling / fewer fires = <b>psychological</b></div>
+    <div class="block-head"><span class="time">35–45 MIN</span><h2>The two committing questions</h2><button class="info-btn" data-target="note-b4" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-b4"><span class="heads">Aim</span>Put both directly to Jeff. These are the questions the May 15 sources said to ask before committing.</div>
+    <div class="item"><div class="box"></div><div class="label">"What would have to be true after 90 days for this to feel like it worked?"<button class="info-btn tiny" data-target="note-b4-q1" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-b4-q1">Listen for: dashboard / data outcome = <b>operational</b> · feeling / fewer fires = <b>psychological</b>.</span></div></div>
     <textarea placeholder="Jeff's 90-day answer…" data-save="n4a"></textarea>
-    <div class="item" style="margin-top:14px"><div class="box"></div><div class="label">"If we got you back two hours an evening — what's your effective hourly rate, and does this pay for itself in weeks even if it's wrong 30% of the time?"</div></div>
-    <div class="listen">Forces the operational math + tests tolerance for an imperfect voice agent.</div>
+    <div class="item" style="margin-top:14px"><div class="box"></div><div class="label">"If we got you back two hours an evening — what's your effective hourly rate, and does this pay for itself in weeks even if it's wrong 30% of the time?"<button class="info-btn tiny" data-target="note-b4-q2" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-b4-q2">Forces the operational math + tests tolerance for an imperfect voice agent.</span></div></div>
     <textarea placeholder="The hourly-rate / payback answer…" data-save="n4b"></textarea>
   </section>
 
   <!-- BLOCK 5 -->
   <section class="block" data-block>
-    <div class="block-head"><span class="time">45–55 MIN</span><h2>Probe the unspoken anxieties</h2></div>
-    <p class="aim">Jeff and Jen voiced almost no forward-looking fears. Stalls come from un-voiced anxiety. Surface the Roy Peartree scar.</p>
+    <div class="block-head"><span class="time">45–55 MIN</span><h2>Probe the unspoken anxieties</h2><button class="info-btn" data-target="note-b5" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-b5"><span class="heads">Aim</span>Jeff and Jen voiced almost no forward-looking fears. Stalls come from un-voiced anxiety. Surface the Roy Peartree scar.</div>
     <div class="item"><div class="box"></div><div class="label">Asked: "What worries you about this not working?"</div></div>
     <div class="item"><div class="box"></div><div class="label">Surfaced the Roy Peartree history<span class="hint">Vendor that hasn't delivered promised features since 2018</span></div></div>
     <textarea placeholder="Fears, hesitations, past burns…" data-save="n5"></textarea>
@@ -377,15 +405,16 @@
 
   <!-- BLOCK 6 -->
   <section class="block" data-block>
-    <div class="block-head"><span class="time">55–60 MIN</span><h2>Reflect back &amp; confirm</h2></div>
-    <p class="aim">Summarize in one or two sentences and watch their faces. Agreement or correction here is your strongest signal.</p>
+    <div class="block-head"><span class="time">55–60 MIN</span><h2>Reflect back &amp; confirm</h2><button class="info-btn" data-target="note-b6" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-b6"><span class="heads">Aim</span>Summarize in one or two sentences and watch their faces. Agreement or correction here is your strongest signal.</div>
     <div class="item"><div class="box"></div><div class="label">Reflected back: "Sounds like the thing that actually ruins your evening is ___"</div></div>
     <div class="item"><div class="box"></div><div class="label">Noted whether they agreed or corrected</div></div>
     <div class="capture">
-      <div class="capture-title">◆ The verdict</div>
-      <div class="field" style="padding-bottom:10px"><label>Diagnosis the visit pointed to</label><input type="text" placeholder="operational / psychological" data-save="verdict"></div>
+      <div class="capture-title">◆ Read on the day<button class="info-btn tiny" data-target="note-b6-verdict" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+      <span class="internal-note inline" id="note-b6-verdict" style="margin: 4px 14px 8px;">Verdict shorthand: <b>operational</b> (data/clarity) vs <b>psychological</b> (stop the fires). Drives build sequence.</span>
+      <div class="field" style="padding-bottom:10px"><label>Your read on what the day pointed to</label><input type="text" placeholder="one line" data-save="verdict"></div>
     </div>
-    <textarea placeholder="Final read: what build sequence does the evidence support, and what's still unknown?" data-save="n6"></textarea>
+    <textarea placeholder="Final read on what the day pointed to and what's still unknown…" data-save="n6"></textarea>
   </section>
 
   <div class="actions">
@@ -412,20 +441,29 @@
 
   items.forEach((it, i) => {
     it.addEventListener('click', e => {
-      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      if (e.target.closest('button') || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
       it.classList.toggle('done');
       STORE['item' + i] = it.classList.contains('done');
       updateProgress();
     });
   });
 
-  // text fields persist in-memory
   document.querySelectorAll('[data-save]').forEach(el => {
     el.addEventListener('input', () => { STORE[el.dataset.save] = el.value; });
   });
 
+  function toggleInternal(btn) {
+    const id = btn.dataset.target;
+    const note = document.getElementById(id);
+    if (!note) return;
+    const open = note.classList.toggle('shown');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
   function resetAll() {
     document.querySelectorAll('.item.done').forEach(it => it.classList.remove('done'));
+    document.querySelectorAll('.internal-note.shown').forEach(n => n.classList.remove('shown'));
+    document.querySelectorAll('.info-btn[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
     document.querySelectorAll('[data-save]').forEach(el => el.value = '');
     for (const k in STORE) delete STORE[k];
     updateProgress();
