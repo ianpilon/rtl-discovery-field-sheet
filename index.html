@@ -387,6 +387,54 @@
     <textarea placeholder="Sandy's own words…" data-save="n3"></textarea>
   </section>
 
+  <!-- PROBING TOOLKIT -->
+  <div style="margin: 40px 0 18px; padding-top: 24px; border-top: 3px double var(--ink);">
+    <div class="kicker"><span>Probing toolkit</span><span>Use during any conversation</span></div>
+    <h2 style="font-size: 1.7rem; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; margin-top: 4px;">Questions for <em style="color: var(--rust); font-style: italic;">anyone</em></h2>
+    <p style="font-style: italic; color: var(--muted); font-size: 1rem; margin-top: 10px; max-width: 58ch;">Pull from these during the shadow and the Sandy block. Person-agnostic, so Jen, Sandy, and Jeff get the same probes.</p>
+  </div>
+
+  <!-- TOOLKIT: MAPPING -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time" style="background: var(--rust);">MAPPING</span><h2>Is the stack really fragmented, or have they adapted?</h2><button class="info-btn" data-target="note-tk-map" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-tk-map"><span class="heads">Aim</span>The sticky-note question and the wish-I-could-just-ask question are the highest-signal probes. If they've built workarounds, the stack is genuinely broken. If they shrug and say "no, it's mostly fine, I just check two things," the fragmentation is more annoyance than business problem.</div>
+    <div class="item"><div class="box"></div><div class="label">"Walk me through where you go to answer a typical question. Say someone asks about truck 12, what do you open first?"<button class="info-btn tiny" data-target="note-tk-map1" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-tk-map1">Count how many systems get touched for one answer.</span></div></div>
+    <div class="item"><div class="box"></div><div class="label">"When you need something, is it usually all in one place, or do you have to stitch it together from a couple of tools?"</div></div>
+    <div class="item"><div class="box"></div><div class="label">"Is there anything you keep in your own head, or on a sticky note or spreadsheet, because the system won't hold it or won't show it to you?"<button class="info-btn tiny" data-target="note-tk-map3" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-tk-map3">Shadow systems are the strongest evidence of real fragmentation. People only build them when the official stack genuinely fails.</span></div></div>
+    <div class="item"><div class="box"></div><div class="label">"What's the thing you wish you could just ask out loud and get an answer to, but instead you have to go dig?"</div></div>
+    <textarea placeholder="Mapping notes…" data-save="ntk-map"></textarea>
+  </section>
+
+  <!-- TOOLKIT: FREQUENCY -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time" style="background: var(--rust);">FREQUENCY</span><h2>Which questions come up over and over</h2><button class="info-btn" data-target="note-tk-freq" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-tk-freq"><span class="heads">Aim</span>Find the repeated, low-judgment lookups. Those are exactly what a self-serve layer kills.</div>
+    <div class="item"><div class="box"></div><div class="label">"What do people ask you for most often during a day?"</div></div>
+    <div class="item"><div class="box"></div><div class="label">"What gets asked that makes you think, 'why are you asking me this again, you could've looked it up'?"<button class="info-btn tiny" data-target="note-tk-freq2" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-tk-freq2">Repeated low-judgment lookups, the exact category a self-serve layer kills.</span></div></div>
+    <div class="item"><div class="box"></div><div class="label">"If you were out sick, what are the three questions everyone would be stuck on without you?"<button class="info-btn tiny" data-target="note-tk-freq3" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-tk-freq3">Finds the human-bottleneck queries, the things only routed through one person.</span></div></div>
+    <div class="item"><div class="box"></div><div class="label">"Is there a time of day or part of the week where the same question floods in?"</div></div>
+    <textarea placeholder="Frequency notes…" data-save="ntk-freq"></textarea>
+  </section>
+
+  <!-- TOOLKIT: LATENCY -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time" style="background: var(--rust);">LATENCY</span><h2>Which answers are slow vs. fast</h2><button class="info-btn" data-target="note-tk-lat" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-tk-lat"><span class="heads">Aim</span>Tell instant lookups from go-find-someone relays. The latter is where Jen→Sandy→Marks shows up as friction.</div>
+    <div class="item"><div class="box"></div><div class="label">"When someone needs X, can you get it in seconds, or is it a 'go-find-Sandy, go-find-the-paperwork' situation?"</div></div>
+    <div class="item"><div class="box"></div><div class="label">"What's the single most annoying thing to track down: the one where you think, 'ugh, this is going to take a while'?"</div></div>
+    <div class="item"><div class="box"></div><div class="label">"Is there anything where you have to wait on someone else before you can even answer?"<button class="info-btn tiny" data-target="note-tk-lat3" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button><span class="internal-note inline" id="note-tk-lat3">This is where the Jen→Sandy→Marks relay shows up as latency.</span></div></div>
+    <div class="item"><div class="box"></div><div class="label">"What's something that should be instant but isn't?"</div></div>
+    <textarea placeholder="Latency notes…" data-save="ntk-lat"></textarea>
+  </section>
+
+  <!-- TOOLKIT: SYNTHESIS -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time" style="background: var(--rust);">SYNTHESIS</span><h2>One question, near the end</h2><button class="info-btn" data-target="note-tk-syn" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
+    <div class="internal-note" id="note-tk-syn"><span class="heads">Aim</span>Force them to pick one. The answer collapses Mapping + Frequency + Latency into a single target.</div>
+    <div class="item"><div class="box"></div><div class="label">"If I could make one question instantly answerable for everyone (no asking around, no digging), which one would save the most pain?"</div></div>
+    <textarea placeholder="Their pick…" data-save="ntk-syn"></textarea>
+  </section>
+
   <!-- BLOCK 6 -->
   <section class="block" data-block>
     <div class="block-head"><span class="time">55–60 MIN</span><h2>Reflect back &amp; confirm</h2><button class="info-btn" data-target="note-b6" onclick="toggleInternal(this)" aria-expanded="false" aria-label="Show internal note">i</button></div>
