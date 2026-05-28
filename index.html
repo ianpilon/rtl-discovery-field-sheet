@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTL Field Sheet — On-Site Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1c1a17;
+    --paper: #f4efe6;
+    --paper-line: #e0d8c8;
+    --rust: #b3502f;
+    --rust-dark: #8a3c22;
+    --olive: #5c6b4a;
+    --margin: #c94a2a;
+    --muted: #7a7264;
+    --done-bg: #e8ede0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Newsreader', Georgia, serif;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(179,80,47,0.04), transparent 40%),
+      linear-gradient(var(--paper), var(--paper));
+    background-color: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 0 16px 80px;
+    min-height: 100vh;
+  }
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* Masthead */
+  header.masthead {
+    border-bottom: 3px double var(--ink);
+    padding: 36px 0 18px;
+    margin-bottom: 8px;
+  }
+  .kicker {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(2rem, 7vw, 3.1rem);
+    font-weight: 600;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+  }
+  h1 em { color: var(--rust); font-style: italic; }
+  .subhead {
+    font-size: 1.02rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 10px;
+    max-width: 56ch;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper);
+    padding: 12px 0 10px;
+    border-bottom: 1px solid var(--paper-line);
+    margin-bottom: 26px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+  .progress-meta b { color: var(--ink); font-size: 0.92rem; }
+  .bar {
+    height: 8px;
+    background: var(--paper-line);
+    border: 1px solid #d2c9b8;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    background: repeating-linear-gradient(45deg, var(--rust), var(--rust) 6px, var(--rust-dark) 6px, var(--rust-dark) 12px);
+    transition: width 0.4s cubic-bezier(.2,.8,.2,1);
+  }
+
+  /* North star box */
+  .northstar {
+    border: 2px solid var(--ink);
+    background: #fffdf8;
+    padding: 18px 20px;
+    margin-bottom: 32px;
+    position: relative;
+    box-shadow: 5px 5px 0 var(--paper-line);
+  }
+  .northstar .tag {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 6px;
+  }
+  .northstar p { font-size: 1.08rem; }
+  .northstar .fork { display: block; margin-top: 8px; font-size: 0.98rem; color: var(--olive); }
+
+  /* Blocks */
+  .block { margin-bottom: 34px; }
+  .block-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+  }
+  .time {
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #fff;
+    background: var(--ink);
+    padding: 3px 9px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .block-head h2 {
+    font-size: 1.45rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+  .aim {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 8px 0 14px;
+  }
+
+  /* Checklist items */
+  .item {
+    display: flex;
+    gap: 13px;
+    padding: 11px 12px 11px 12px;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+    align-items: flex-start;
+  }
+  .item:hover { background: rgba(179,80,47,0.05); }
+  .item.done {
+    background: var(--done-bg);
+    border-left-color: var(--olive);
+  }
+  .box {
+    flex: 0 0 auto;
+    width: 22px; height: 22px;
+    border: 2px solid var(--ink);
+    margin-top: 2px;
+    position: relative;
+    transition: background 0.18s;
+  }
+  .item.done .box { background: var(--olive); border-color: var(--olive); }
+  .item.done .box::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    color: #fff;
+    font-family: 'Spline Sans Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .item .label { font-size: 1.04rem; }
+  .item.done .label { text-decoration: line-through; text-decoration-color: var(--olive); color: var(--muted); }
+  .item .label .hint { display: block; font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 2px; }
+
+  /* Data capture rows */
+  .capture {
+    margin: 14px 0 4px;
+    border: 1px dashed #b9af9c;
+    background: rgba(255,255,255,0.5);
+  }
+  .capture-title {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    padding: 9px 14px 4px;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border-top: 1px solid var(--paper-line);
+  }
+  .field:first-of-type { border-top: none; }
+  .field label { flex: 1; font-size: 0.96rem; }
+  .field input[type=text] {
+    flex: 0 0 130px;
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.9rem;
+    border: none;
+    border-bottom: 1.5px solid var(--ink);
+    background: transparent;
+    padding: 3px 4px;
+    color: var(--rust-dark);
+  }
+  .field input[type=text]:focus { outline: none; border-bottom-color: var(--rust); background: rgba(179,80,47,0.06); }
+
+  textarea {
+    width: 100%;
+    font-family: 'Newsreader', serif;
+    font-size: 0.98rem;
+    border: 1px solid #c4baa6;
+    background: rgba(255,255,255,0.55);
+    padding: 9px 11px;
+    margin-top: 8px;
+    resize: vertical;
+    min-height: 56px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  textarea:focus { outline: none; border-color: var(--rust); }
+  textarea::placeholder { color: #a89e8c; font-style: italic; }
+
+  .listen {
+    font-size: 0.9rem;
+    color: var(--olive);
+    margin-top: 7px;
+    padding-left: 12px;
+    border-left: 2px solid var(--olive);
+  }
+
+  /* Footer actions */
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 3px double var(--ink);
+  }
+  button.act {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 11px 18px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  button.act:hover { background: var(--ink); color: var(--paper); }
+  button.act.primary { background: var(--rust); border-color: var(--rust); color: #fff; }
+  button.act.primary:hover { background: var(--rust-dark); border-color: var(--rust-dark); }
+
+  .savednote {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 0.66rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 18px;
+    letter-spacing: 0.06em;
+  }
+
+  @media print {
+    .progress-wrap, .actions { display: none; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="kicker">
+      <span>RTL Forward-Deployed Pilot</span>
+      <span>On-Site Discovery · 60 min</span>
+    </div>
+    <h1>The <em>Field Sheet</em></h1>
+    <p class="subhead">One hour, one job: resolve the operational-vs-psychological diagnosis. Watch, time, and listen — don't pitch.</p>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span>Goals completed</span>
+      <b><span id="pct">0</span>% · <span id="count">0</span>/<span id="total">0</span></b>
+    </div>
+    <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+  </div>
+
+  <div class="northstar">
+    <div class="tag">★ Walk out knowing this</div>
+    <p>Does Jeff want to <strong>see his business clearly</strong> or <strong>stop feeling out of control</strong>?</p>
+    <span class="fork">→ "See clearly" routes to integration-first. "Stop the fires" routes to voice-surfaces-first. Everything below points at this fork.</span>
+  </div>
+
+  <!-- BLOCK 1 -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time">0–5 MIN</span><h2>Set the frame</h2></div>
+    <p class="aim">Establish you're here to observe, not sell. Get permission to take timestamps.</p>
+    <div class="item"><div class="box"></div><div class="label">Stated the visit is about watching, not pitching</div></div>
+    <div class="item"><div class="box"></div><div class="label">Got permission to time / take notes during their workflow</div></div>
+    <div class="item"><div class="box"></div><div class="label">Confirmed Sandy is reachable today<span class="hint">Biggest blind spot — no one has heard from Sandy directly</span></div></div>
+  </section>
+
+  <!-- BLOCK 2 -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time">5–20 MIN</span><h2>Shadow the workflow</h2></div>
+    <p class="aim">Watch a real information-retrieval event. Observe and stopwatch — don't ask them to estimate. Kills the "hand-wavy ROI" problem.</p>
+    <div class="item"><div class="box"></div><div class="label">Witnessed a live Jen→Sandy→Marks/Jimmy relay fire</div></div>
+    <div class="capture">
+      <div class="capture-title">⏱ Baseline numbers (the 3 missing metrics)</div>
+      <div class="field"><label>Information-wait time (request → answer)</label><input type="text" placeholder="e.g. 14 min" data-save="m1"></div>
+      <div class="field"><label>Vendor-sourcing time per incident</label><input type="text" placeholder="e.g. 40 min" data-save="m2"></div>
+      <div class="field"><label>Relay events observed per hour</label><input type="text" placeholder="e.g. 5" data-save="m3"></div>
+    </div>
+    <textarea placeholder="Notes on what actually happened during the relay…" data-save="n2"></textarea>
+  </section>
+
+  <!-- BLOCK 3 -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time">20–35 MIN</span><h2>Talk to Sandy directly</h2></div>
+    <p class="aim">Half the diagnoses route through Jen's version of Sandy. Verify whether the relay is the real bottleneck or just a symptom.</p>
+    <div class="item"><div class="box"></div><div class="label">Asked Sandy what eats the most time in a day</div></div>
+    <div class="item"><div class="box"></div><div class="label">Got the monthly safety-pass duration</div></div>
+    <div class="item"><div class="box"></div><div class="label">Asked what people interrupt Sandy for most often</div></div>
+    <textarea placeholder="Sandy's own words — where do they differ from Jen's version?" data-save="n3"></textarea>
+  </section>
+
+  <!-- BLOCK 4 -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time">35–45 MIN</span><h2>The two committing questions</h2></div>
+    <p class="aim">Put both directly to Jeff. These are the questions the May 15 sources said to ask before committing.</p>
+    <div class="item"><div class="box"></div><div class="label">"What would have to be true after 90 days for this to feel like it worked?"</div></div>
+    <div class="listen">Listen for: dashboard/data outcome = <b>operational</b> · feeling / fewer fires = <b>psychological</b></div>
+    <textarea placeholder="Jeff's 90-day answer…" data-save="n4a"></textarea>
+    <div class="item" style="margin-top:14px"><div class="box"></div><div class="label">"If we got you back two hours an evening — what's your effective hourly rate, and does this pay for itself in weeks even if it's wrong 30% of the time?"</div></div>
+    <div class="listen">Forces the operational math + tests tolerance for an imperfect voice agent.</div>
+    <textarea placeholder="The hourly-rate / payback answer…" data-save="n4b"></textarea>
+  </section>
+
+  <!-- BLOCK 5 -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time">45–55 MIN</span><h2>Probe the unspoken anxieties</h2></div>
+    <p class="aim">Jeff and Jen voiced almost no forward-looking fears. Stalls come from un-voiced anxiety. Surface the Roy Peartree scar.</p>
+    <div class="item"><div class="box"></div><div class="label">Asked: "What worries you about this not working?"</div></div>
+    <div class="item"><div class="box"></div><div class="label">Surfaced the Roy Peartree history<span class="hint">Vendor that hasn't delivered promised features since 2018</span></div></div>
+    <textarea placeholder="Fears, hesitations, past burns…" data-save="n5"></textarea>
+  </section>
+
+  <!-- BLOCK 6 -->
+  <section class="block" data-block>
+    <div class="block-head"><span class="time">55–60 MIN</span><h2>Reflect back &amp; confirm</h2></div>
+    <p class="aim">Summarize in one or two sentences and watch their faces. Agreement or correction here is your strongest signal.</p>
+    <div class="item"><div class="box"></div><div class="label">Reflected back: "Sounds like the thing that actually ruins your evening is ___"</div></div>
+    <div class="item"><div class="box"></div><div class="label">Noted whether they agreed or corrected</div></div>
+    <div class="capture">
+      <div class="capture-title">◆ The verdict</div>
+      <div class="field" style="padding-bottom:10px"><label>Diagnosis the visit pointed to</label><input type="text" placeholder="operational / psychological" data-save="verdict"></div>
+    </div>
+    <textarea placeholder="Final read: what build sequence does the evidence support, and what's still unknown?" data-save="n6"></textarea>
+  </section>
+
+  <div class="actions">
+    <button class="act primary" onclick="window.print()">Print / Save PDF</button>
+    <button class="act" onclick="resetAll()">Reset sheet</button>
+  </div>
+  <p class="savednote">Progress &amp; notes persist in this browser tab during your session.</p>
+
+</div>
+
+<script>
+  const STORE = {};
+  const items = Array.from(document.querySelectorAll('.item'));
+  const total = items.length;
+  document.getElementById('total').textContent = total;
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.item.done').length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('count').textContent = done;
+    document.getElementById('pct').textContent = pct;
+    document.getElementById('barFill').style.width = pct + '%';
+  }
+
+  items.forEach((it, i) => {
+    it.addEventListener('click', e => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      it.classList.toggle('done');
+      STORE['item' + i] = it.classList.contains('done');
+      updateProgress();
+    });
+  });
+
+  // text fields persist in-memory
+  document.querySelectorAll('[data-save]').forEach(el => {
+    el.addEventListener('input', () => { STORE[el.dataset.save] = el.value; });
+  });
+
+  function resetAll() {
+    document.querySelectorAll('.item.done').forEach(it => it.classList.remove('done'));
+    document.querySelectorAll('[data-save]').forEach(el => el.value = '');
+    for (const k in STORE) delete STORE[k];
+    updateProgress();
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
